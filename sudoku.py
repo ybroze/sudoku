@@ -9,18 +9,6 @@ from urllib2 import urlopen
 from lxml import html
 
 
-def to_square(position):
-    """Convert a position tuple to a square number as an int,
-       0 through 8, corresponding to the square on the
-       sudoku board.
-    """
-    x, y = position
-    hyper_row = x / 3
-    hyper_column = y / 3
-
-    return (hyper_row * 3) + hyper_column
-
-
 def new_board():
     """Make a new blank board dict."""
     return { (x,y): None for x, y in product(range(9), range(9)) }
@@ -31,6 +19,18 @@ def print_board(board):
     for row in range(9):
         tokens = [ board[row, col] or '.' for col in range(9) ]
         print ' '.join( str(t) for t in tokens )
+
+
+def to_square(position):
+    """Convert a position tuple to a square number as an int,
+       0 through 8, corresponding to the square on the
+       sudoku board.
+    """
+    x, y = position
+    hyper_row = x / 3
+    hyper_column = y / 3
+
+    return (hyper_row * 3) + hyper_column
 
 
 def new_possible():
@@ -50,7 +50,7 @@ def fetch_new_puzzle(difficulty):
     tree = html.fromstring(page_text)
 
     board = new_board()
-    for x, y in product(range(9), range(9)):
+    for x, y in board:
         element_id = (x * 9) + y + 1
         text_content = tree.get_element_by_id(element_id).text_content()
         value = int(text_content) if text_content else None
@@ -84,7 +84,7 @@ def deterministic_solve(board, possible):
         print_board(board)
 
         # Check every cell to see what its possibilities are.
-        for cell in product(range(9), range(9)):
+        for cell in board:
 
             # Solved cells have one possibility.
             if board[cell]:
@@ -102,7 +102,7 @@ def deterministic_solve(board, possible):
                 possible[cell] = possible[cell].difference(others)
 
         # Now update our board appropriately.
-        for cell in product(range(9), range(9)):
+        for cell in board:
 
             # We must have some possibilities for each.
             if len(possible[cell]) == 0:
