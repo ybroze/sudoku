@@ -35,8 +35,8 @@ def print_board(board):
 
 def new_possible():
     """Make a new blank possibilities dict."""
-    return { position: set(range(1, 10))
-             for position in product(range(9), range(9)) }
+    return { (x, y): set(range(1, 10))
+             for x, y in product(range(9), range(9)) }
 
 
 def fetch_new_puzzle(difficulty):
